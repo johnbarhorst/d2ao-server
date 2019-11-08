@@ -1,0 +1,10 @@
+{
+  "workbench.colorCustomizations": {
+    "[Perfect Dark]": {
+      "titleBar.activeBackground": "#580c0c",
+      "titleBar.activeForeground": "#cfbcbc",
+      "titleBar.border": "#580c0c",
+      "statusBar.background": "#580c0c"
+    },
+  },
+}

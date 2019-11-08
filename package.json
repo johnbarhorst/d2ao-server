@@ -1,0 +1,21 @@
+{
+  "name": "d2ao-server",
+  "version": "0.0.1",
+  "description": "Node/Express routes for D2AO",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Node",
+    "Express",
+    "Destiny2"
+  ],
+  "author": "John Barhorst",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "nodemon": "^1.19.4"
+  }
+}
