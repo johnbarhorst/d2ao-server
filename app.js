@@ -1,33 +1,37 @@
 const express = require('express');
+const request = require('request');
+require('dotenv').config();
 
 const app = express();
 const port = 3001;
 
 //Middleware
-const apiCall = async function () {
-  const stuff = await get(
-    `https://www.bungie.net/Platform/Destiny2/1/Profile/${req.params.slug}/?components=200`,
-    {
-      headers: {
-        "X-API-KEY": API_KEY
-      }
+const API_KEY = process.env.API_KEY;
+
+
+
+app.use('/test', function (req, res, next) {
+  console.log('Got there');
+  request({
+    url: `https://www.bungie.net/Platform/Destiny2/1/Profile/4611686018434143187/?components=200`,
+    headers: {
+      "X-API-KEY": API_KEY
     }
-  );
-}
-
-
-app.use('/test');
+  }).pipe(res);
+});
 
 // Error handling, keep at bottom of middleware (so sayeth the docs)
-app.use(function (req, res, next) {
-  res.status(404).send("Sorry can't find that!")
+app.use(function (err, req, res, next) {
+  console.error(err.stack);
+  res.status(404).send("Sorry can't find that!");
 })
 // Routes
 
-app.get('/', (res, req, next) => {
-  req.send('Hello World');
+app.get('/test', (req, res, next) => {
+
+  res.send(res);
 });
 
 
 
-app.listen(port, () => console.log(`Listening on port ${port}`));
+app.listen(port, () => console.log(`Listening on port ${port} at ${Date.now()}`));
