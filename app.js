@@ -1,3 +1,4 @@
+const fs = require('fs');
 const express = require('express');
 const request = require('request');
 const rp = require('request-promise-native');
@@ -8,6 +9,39 @@ const app = express();
 const port = process.env.PORT || 3001;
 const API_KEY = process.env.API_KEY;
 
+
+// Server stuff
+// const getDatabasePaths = async function () {
+//   const response = await rp({
+//     url: `https://www.bungie.net/Platform/Destiny2/Manifest/`,
+//     headers: {
+//       "X-API-KEY": API_KEY
+//     }
+//   });
+//   const json = await JSON.parse(response);
+//   const data = await json.Response;
+//   const path = await data;
+//   console.log(data);
+// }
+// getDatabasePaths();
+
+
+// const generateDB = async function () {
+//   const data = await getDatabase();
+//   fs.writeFile('db.json', data, (err) => {
+//     if (err) throw err;
+//   });
+// }
+
+// const getDatabase = async function () {
+//   const path = await getDatabasePath();
+//   request.get(`https://www.bungie.net${path}`).pipe(
+//     fs.createWriteStream('db.json')
+//   );
+// }
+
+// fs.access('db.json', fs.constants.F_OK, async (err) =>
+//   err ? getDatabase() : console.log('db exists'));
 
 // Middleware
 
@@ -29,13 +63,14 @@ app.get('/api/Profile/:membershipType/:destinyMembershipId', async (req, res, ne
   console.log('Got there');
   console.log(req.params);
   const data = await rp({
-    url: `https://www.bungie.net/Platform/Destiny2/${req.params.membershipType}/Profile/${req.params.destinyMembershipId}/?components=200`,
+    url: `https://www.bungie.net/Platform/Destiny2/${req.params.membershipType}/Profile/${req.params.destinyMembershipId}/?components=200,100`,
     headers: {
       "X-API-KEY": API_KEY
     }
   }, (err, res, body) => {
     if (err) { return console.log(err); }
   });
+  console.log(JSON.parse(data).Response);
   res.send(data);
 });
 
