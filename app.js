@@ -1,6 +1,4 @@
-const fs = require('fs');
 const express = require('express');
-const request = require('request');
 const rp = require('request-promise-native');
 const cors = require('cors');
 require('dotenv').config();
@@ -9,39 +7,6 @@ const app = express();
 const port = process.env.PORT || 3001;
 const API_KEY = process.env.API_KEY;
 
-
-// Server stuff
-// const getDatabasePaths = async function () {
-//   const response = await rp({
-//     url: `https://www.bungie.net/Platform/Destiny2/Manifest/`,
-//     headers: {
-//       "X-API-KEY": API_KEY
-//     }
-//   });
-//   const json = await JSON.parse(response);
-//   const data = await json.Response;
-//   const path = await data;
-//   console.log(data);
-// }
-// getDatabasePaths();
-
-
-// const generateDB = async function () {
-//   const data = await getDatabase();
-//   fs.writeFile('db.json', data, (err) => {
-//     if (err) throw err;
-//   });
-// }
-
-// const getDatabase = async function () {
-//   const path = await getDatabasePath();
-//   request.get(`https://www.bungie.net${path}`).pipe(
-//     fs.createWriteStream('db.json')
-//   );
-// }
-
-// fs.access('db.json', fs.constants.F_OK, async (err) =>
-//   err ? getDatabase() : console.log('db exists'));
 
 // Middleware
 
@@ -60,7 +25,7 @@ app.use(function (err, req, res, next) {
 
 // Handle Item Instance Requests 
 app.get('/api/Item/:membershipType/:destinyMembershipId/:itemInstanceId', async (req, res, next) => {
-  console.log('Item Req');
+  console.log('Item Request');
   const data = await rp({
     url: `https://www.bungie.net/Platform/Destiny2/${req.params.membershipType}/Profile/${req.params.destinyMembershipId}/Item/${req.params.itemInstanceId}/?components=300`,
     headers: {
@@ -75,7 +40,7 @@ app.get('/api/Item/:membershipType/:destinyMembershipId/:itemInstanceId', async 
 
 // Handle Character List Request
 app.get('/api/Profile/:membershipType/:destinyMembershipId', async (req, res, next) => {
-  console.log('Got there');
+  console.log('Character List Request');
   console.log(req.params);
   const data = await rp({
     url: `https://www.bungie.net/Platform/Destiny2/${req.params.membershipType}/Profile/${req.params.destinyMembershipId}/?components=200,100`,
@@ -108,7 +73,6 @@ app.get('/api/Profile/:membershipType/:destinyMembershipId/:characterId', async 
 //Handle Character Search Request
 app.get('/api/search/:search', async (req, res, next) => {
   console.log('Search Character');
-  console.log(req.params);
   const data = await rp({
     url: `https://www.bungie.net/Platform/Destiny2/SearchDestinyPlayer/All/${req.params.search}/`,
     headers: {
