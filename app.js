@@ -58,12 +58,43 @@ app.use(function (err, req, res, next) {
 
 // Routes
 
+// Handle Item Instance Requests 
+app.get('/api/Item/:membershipType/:destinyMembershipId/:itemInstanceId', async (req, res, next) => {
+  console.log('Item Req');
+  const data = await rp({
+    url: `https://www.bungie.net/Platform/Destiny2/${req.params.membershipType}/Profile/${req.params.destinyMembershipId}/Item/${req.params.itemInstanceId}/?components=300`,
+    headers: {
+      "X-API-KEY": API_KEY
+    }
+  }, (err, res, body) => {
+    if (err) { return console.log(err); }
+  });
+  console.log(JSON.parse(data).Response);
+  res.send(data);
+});
+
 // Handle Character List Request
 app.get('/api/Profile/:membershipType/:destinyMembershipId', async (req, res, next) => {
   console.log('Got there');
   console.log(req.params);
   const data = await rp({
     url: `https://www.bungie.net/Platform/Destiny2/${req.params.membershipType}/Profile/${req.params.destinyMembershipId}/?components=200,100`,
+    headers: {
+      "X-API-KEY": API_KEY
+    }
+  }, (err, res, body) => {
+    if (err) { return console.log(err); }
+  });
+  console.log(JSON.parse(data).Response);
+  res.send(data);
+});
+
+//Handle Individual Character Request
+
+app.get('/api/Profile/:membershipType/:destinyMembershipId/:characterId', async (req, res, next) => {
+  console.log('Character Request');
+  const data = await rp({
+    url: `https://www.bungie.net/Platform/Destiny2/${req.params.membershipType}/Profile/${req.params.destinyMembershipId}/Character/${req.params.characterId}/?components=201`,
     headers: {
       "X-API-KEY": API_KEY
     }
@@ -87,7 +118,6 @@ app.get('/api/search/:search', async (req, res, next) => {
     if (err) { return console.log(err); }
   });
   res.send(data);
-
 });
 
 app.get('/', (req, res, next) => {
