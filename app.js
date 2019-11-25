@@ -2,12 +2,16 @@ const https = require('https');
 const fs = require('fs');
 const express = require('express');
 const rp = require('request-promise-native');
+const mongoose = require('mongoose');
 require('dotenv').config();
 
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const API_KEY = process.env.API_KEY;
+const { API_KEY, Mongo_DB } = process.env;
+
+// Connect to MongoDB
+mongoose.connect(Mongo_DB, () => console.log('Connected to MongoDB'));
 
 const serverListenTime = function () {
   const today = new Date();
