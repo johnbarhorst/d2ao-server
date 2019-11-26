@@ -7,8 +7,6 @@ const { client_id, client_secret, API_KEY } = process.env;
 const User = require('../models/user-models.js');
 
 
-
-
 //auth login
 
 passport.use(new Oauth2Strategy({
@@ -18,17 +16,40 @@ passport.use(new Oauth2Strategy({
   clientSecret: client_secret,
   callBackURL: 'https://localhost:3001/auth/redirect'
 }, async (accessToken, refreshToken, profile, cb) => {
-  console.log('callback section reached');
   const data = await rp({
     url: `https://www.bungie.net/Platform/User/GetMembershipsForCurrentUser/`,
     headers: {
       "Authorization": `Bearer ${accessToken}`,
       "X-API-KEY": API_KEY
     }
-  }, (err, res, body) => {
-    if (err) { return console.log(err); }
-  });
-  console.log(data);
+  }, err => err && console.log(err));
+  const accountInfo = JSON.parse(data).Response;
+  const destinyProfile = accountInfo.destinyMemberships;
+  const bungieProfile = accountInfo.bungieNetUser;
+  console.log(destinyProfile);
+  console.log(bungieProfile);
+  User.findOne({ bungieId: bungieProfile.membershipId })
+    .then(currentUser => {
+      if (currentUser) {
+        console.log(currentUser);
+      } else {
+        new User({
+          username: bungieProfile.displayName,
+          bungieId: bungieProfile.membershipId,
+          locale: bungieProfile.locale,
+          platforms: destinyProfile.map(profile => {
+            return {
+              displayName: profile.displayName,
+              membershipType: profile.membershipType,
+              membershipId: profile.membershipId,
+              crossSaveOverride: profile.crossSaveOverride,
+              iconPath: profile.iconPath
+            }
+          })
+        }).save().then(newUser => console.log(newUser));
+      }
+    });
+
 }));
 
 router.get('/login', passport.authenticate('oauth2'));
