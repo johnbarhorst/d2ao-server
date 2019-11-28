@@ -7,6 +7,17 @@ const { client_id, client_secret, API_KEY } = process.env;
 const User = require('../models/user-models.js');
 
 
+//cookies
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser((id, done) => {
+  User.findById(id).then((user) => {
+    done(null, user);
+  })
+});
+
 //auth login
 
 passport.use(new Oauth2Strategy({
@@ -26,12 +37,11 @@ passport.use(new Oauth2Strategy({
   const accountInfo = JSON.parse(data).Response;
   const destinyProfile = accountInfo.destinyMemberships;
   const bungieProfile = accountInfo.bungieNetUser;
-  console.log(destinyProfile);
-  console.log(bungieProfile);
   User.findOne({ bungieId: bungieProfile.membershipId })
     .then(currentUser => {
       if (currentUser) {
         console.log(currentUser);
+        done(null, currentUser);
       } else {
         new User({
           username: bungieProfile.displayName,
@@ -46,7 +56,10 @@ passport.use(new Oauth2Strategy({
               iconPath: profile.iconPath
             }
           })
-        }).save().then(newUser => console.log(newUser));
+        }).save().then(newUser => {
+          console.log(newUser);
+          done(null, newUser);
+        });
       }
     });
 

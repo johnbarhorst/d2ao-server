@@ -2,13 +2,15 @@ const https = require('https');
 const fs = require('fs');
 const express = require('express');
 const rp = require('request-promise-native');
+const cookieSession = require('cookie-session');
+const passport = require('passport');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const { API_KEY, Mongo_DB } = process.env;
+const { API_KEY, Mongo_DB, cookieKey } = process.env;
 
 // Connect to MongoDB
 mongoose.connect(Mongo_DB, () => console.log('Connected to MongoDB'));
@@ -21,6 +23,15 @@ const serverListenTime = function () {
 // Middleware
 const authRoutes = require('./routes/auth.js');
 const apiRoutes = require('./routes/api.js');
+
+app.use(cookieSession({
+  maxAge: 24 * 60 * 60 * 1000,
+  keys: [process.env.cookieKey],
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 
 // OAuth Handling
